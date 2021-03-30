@@ -1,6 +1,14 @@
 package application
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/asaskevich/govalidator"
+)
+
+func init() {
+	govalidator.SetFieldsRequiredByDefault(true)
+}
 
 // O Metodo comecando com Letra maiscula são metodos publicos, ou seja, poderão ser acessados fora do pacote.
 // O Metodo comecando com Letra minuscula são metodos privados, ou seja, NÃO poderão ser acessados fora do pacote.
@@ -21,11 +29,12 @@ const (
 )
 
 // golang implements the interfaces automatically
+//Using tags to check the value
 type Product struct {
-	Id     string
-	Name   string
-	Status string
-	Price  float32
+	Id     string  `valid:"uuidv4"`
+	Name   string  `valid:"required"`
+	Status string  `valid:"required"`
+	Price  float32 `valid:"float,optional"`
 }
 
 func (p *Product) IsValid() (bool, error) {
@@ -41,6 +50,13 @@ func (p *Product) IsValid() (bool, error) {
 	if p.Price < 0 {
 		return false, errors.New("the product price must be greater than or equal do zero")
 	}
+
+	_, err := govalidator.ValidateStruct(p)
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
 
 }
 
