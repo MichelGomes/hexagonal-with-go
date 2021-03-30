@@ -26,3 +26,24 @@ func TestNot_Possible_To_Enable_Product_With_Price_Equal_Zero(t *testing.T) {
 	err := product.Enable()
 	require.Equal(t, "the produce price must be greater than zero to enabled it", err.Error())
 }
+
+func TestNot_Possible_To_Disable_Product_With_Price_Equal_Zero(t *testing.T) {
+	product := application.Product{}
+	product.Name = "Hello"
+	product.Status = application.ENABLED
+	product.Price = 10
+
+	err := product.Disable()
+	require.Equal(t, "the produce price must be zero to disabled it", err.Error())
+}
+
+func TestPossible_To_Disable_Product_With_Price_Equal_Zero(t *testing.T) {
+	product := application.Product{}
+	product.Name = "Hello"
+	product.Status = application.ENABLED
+	product.Price = 0
+
+	err := product.Disable()
+	require.Nil(t, err)
+
+}

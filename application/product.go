@@ -28,7 +28,19 @@ type Product struct {
 	Price  float32
 }
 
-func (p *Product) IsValid(bool, error) {
+func (p *Product) IsValid() (bool, error) {
+
+	if p.Status == "" {
+		p.Status = DISABLED
+	}
+
+	if p.Status != ENABLED && p.Status != DISABLED {
+		return false, errors.New("the status must be enabled or disabled")
+	}
+
+	if p.Price < 0 {
+		return false, errors.New("the product price must be greater than or equal do zero")
+	}
 
 }
 
@@ -41,9 +53,15 @@ func (p *Product) Enable() error {
 	return errors.New("the produce price must be greater than zero to enabled it")
 }
 
-//func (p *Product) Disable() error {
-//
-//}
+func (p *Product) Disable() error {
+
+	if p.Price == 0 {
+		p.Status = DISABLED
+		return nil
+	}
+	return errors.New("the produce price must be zero to disabled it")
+
+}
 
 func (p *Product) getId() string {
 	return p.Id
