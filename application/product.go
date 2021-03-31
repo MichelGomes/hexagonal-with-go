@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/asaskevich/govalidator"
+	uuid "github.com/satori/go.uuid"
 )
 
 func init() {
@@ -23,6 +24,27 @@ type ProductInterface interface {
 	getPrice() float32
 }
 
+type ProductServiceInterface interface {
+	Get(id string) (ProductInterface, error)
+	Create(name string, price float32) (ProductInterface, error)
+	Enable(product ProductInterface) (ProductInterface, error)
+	Disable(product ProductInterface) (ProductInterface, error)
+}
+
+type ProductReader interface {
+	Get(id string) (ProductInterface, error)
+}
+
+type ProductWriter interface {
+	Save(product ProductInterface) (ProductInterface, error)
+}
+
+//Interface Composition
+type ProductPersistenceInterface interface {
+	ProductReader
+	ProductWriter
+}
+
 const (
 	DISABLED = "disabled"
 	ENABLED  = "enabled"
@@ -35,6 +57,17 @@ type Product struct {
 	Name   string  `valid:"required"`
 	Status string  `valid:"required"`
 	Price  float32 `valid:"float,optional"`
+}
+
+//* in golang is a pointer
+//& in golang location of value in memory
+func NewProduct() *Product {
+	product := Product{
+		Id:     uuid.NewV4().String(),
+		Status: DISABLED,
+	}
+	return &product
+
 }
 
 func (p *Product) IsValid() (bool, error) {
